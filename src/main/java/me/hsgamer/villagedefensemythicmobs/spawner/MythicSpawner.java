@@ -1,6 +1,7 @@
 package me.hsgamer.villagedefensemythicmobs.spawner;
 
 import com.udojava.evalex.Expression;
+import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
@@ -29,7 +30,7 @@ public class MythicSpawner implements ZombieSpawner {
     private static final String WOLF_VAR = "wolf";
     private static final String GOLEM_VAR = "golem";
 
-    private final MythicMob mythicMob;
+    private final String mythicMobName;
     private final int priority;
     private final List<Expression> phaseConditions = new ArrayList<>();
     private final List<Expression> waveConditions = new ArrayList<>();
@@ -38,8 +39,8 @@ public class MythicSpawner implements ZombieSpawner {
     private Expression spawnWeightExpression = new Expression("1");
     private Expression levelExpression = new Expression("1");
 
-    public MythicSpawner(MythicMob mythicMob, int priority) {
-        this.mythicMob = mythicMob;
+    public MythicSpawner(String mythicMobName, int priority) {
+        this.mythicMobName = mythicMobName;
         this.priority = priority;
     }
 
@@ -114,7 +115,7 @@ public class MythicSpawner implements ZombieSpawner {
 
     @Override
     public String getName() {
-        return "Mythic_" + mythicMob.getInternalName();
+        return "Mythic_" + mythicMobName;
     }
 
     @Override
@@ -123,6 +124,11 @@ public class MythicSpawner implements ZombieSpawner {
     }
 
     public boolean spawnZombie(Location location, Arena arena, double level) {
+        MythicMob mythicMob = MythicMobs.inst().getAPIHelper().getMythicMob(mythicMobName);
+        if (mythicMob == null) {
+            LOGGER.warning(() -> "Cannot load mythic mob named " + mythicMobName);
+            return false;
+        }
         ActiveMob mob = mythicMob.spawn(BukkitAdapter.adapt(location), level);
         Entity entity = mob.getEntity().getBukkitEntity();
         if (entity instanceof Zombie) {
@@ -130,7 +136,7 @@ public class MythicSpawner implements ZombieSpawner {
             return true;
         } else {
             mob.getEntity().remove();
-            LOGGER.warning(() -> "Cannot spawn " + mythicMob.getInternalName() + " in arena " + arena.getId() + " as the mob is not Zombie");
+            LOGGER.warning(() -> "Cannot spawn " + mythicMobName + " in arena " + arena.getId() + " as the mob is not Zombie");
             return false;
         }
     }

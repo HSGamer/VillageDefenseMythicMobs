@@ -1,8 +1,6 @@
 package me.hsgamer.villagedefensemythicmobs.config;
 
 import com.udojava.evalex.Expression;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import me.hsgamer.hscore.bukkit.config.BukkitConfig;
 import me.hsgamer.hscore.common.CollectionUtils;
 import me.hsgamer.hscore.expression.ExpressionUtils;
@@ -13,11 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 public class MobsConfig {
-    private static final Logger LOGGER = Logger.getLogger(MobsConfig.class.getSimpleName());
     private final VillageDefenseMythicMobs plugin;
     private final BukkitConfig config;
     private final List<MythicSpawner> spawnerList = new ArrayList<>();
@@ -41,21 +37,14 @@ public class MobsConfig {
         config.getKeys(false).forEach(key -> {
             Map<String, Object> values = config.getNormalizedValues(key, false);
             MythicSpawner spawner = getSpawner(key, values);
-            if (spawner != null) {
-                spawnerList.add(spawner);
-                plugin.getParentPlugin().getZombieSpawnerRegistry().getZombieSpawnerSet().add(spawner);
-            }
+            spawnerList.add(spawner);
+            plugin.getParentPlugin().getZombieSpawnerRegistry().getZombieSpawnerSet().add(spawner);
         });
     }
 
     private MythicSpawner getSpawner(String name, Map<String, Object> values) {
-        MythicMob mob = MythicMobs.inst().getAPIHelper().getMythicMob(name);
-        if (mob == null) {
-            LOGGER.warning(() -> "Cannot load mythic mob named " + name);
-            return null;
-        }
         int priority = Optional.ofNullable(values.get("priority")).map(String::valueOf).map(Integer::parseInt).orElse(0);
-        MythicSpawner spawner = new MythicSpawner(mob, priority);
+        MythicSpawner spawner = new MythicSpawner(name, priority);
 
         Optional.ofNullable(values.get("phase-condition"))
                 .map(o -> values.getOrDefault("phase", o))

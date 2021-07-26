@@ -9,6 +9,7 @@ import org.bukkit.event.Listener;
 import plugily.projects.villagedefense.arena.Arena;
 import plugily.projects.villagedefense.arena.ArenaRegistry;
 
+import java.util.Objects;
 import java.util.Optional;
 
 public class MythicSpawnListener implements Listener {
@@ -17,7 +18,7 @@ public class MythicSpawnListener implements Listener {
     public void onMythicSpawn(MythicMobSpawnEvent event) {
         Entity entity = event.getEntity();
         Location location = event.getLocation();
-        Optional<Arena> optionalArena = ArenaRegistry.getArenas().parallelStream().filter(arena -> location.getWorld().equals(arena.getStartLocation().getWorld())).findAny();
+        Optional<Arena> optionalArena = ArenaRegistry.getArenas().parallelStream().filter(arena -> Objects.equals(location.getWorld(), arena.getStartLocation().getWorld())).findAny();
         if (!optionalArena.isPresent()) {
             return;
         }
