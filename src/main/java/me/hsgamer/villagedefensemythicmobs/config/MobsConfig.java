@@ -51,7 +51,7 @@ public class MobsConfig {
     private MythicSpawner getSpawner(String name, Map<String, Object> values) {
         MythicMob mob = MythicMobs.inst().getAPIHelper().getMythicMob(name);
         if (mob == null) {
-            LOGGER.warning(() -> "Cannot load mythic mob named" + name);
+            LOGGER.warning(() -> "Cannot load mythic mob named " + name);
             return null;
         }
         int priority = Optional.ofNullable(values.get("priority")).map(String::valueOf).map(Integer::parseInt).orElse(0);
