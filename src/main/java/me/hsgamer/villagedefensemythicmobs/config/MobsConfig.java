@@ -58,24 +58,29 @@ public class MobsConfig {
         MythicSpawner spawner = new MythicSpawner(mob, priority);
 
         Optional.ofNullable(values.get("phase-condition"))
+                .map(o -> values.getOrDefault("phase", o))
                 .map(o -> CollectionUtils.createStringListFromObject(o, true))
                 .map(list -> list.stream().map(Expression::new).map(this::applyCustomFunction).collect(Collectors.toList()))
                 .ifPresent(spawner::addPhaseConditions);
         Optional.ofNullable(values.get("wave-condition"))
+                .map(o -> values.getOrDefault("wave", o))
                 .map(o -> CollectionUtils.createStringListFromObject(o, true))
                 .map(list -> list.stream().map(Expression::new).map(this::applyCustomFunction).collect(Collectors.toList()))
                 .ifPresent(spawner::addWaveConditions);
         Optional.ofNullable(values.get("spawn-rate"))
+                .map(o -> values.getOrDefault("rate", o))
                 .map(String::valueOf)
                 .map(Expression::new)
                 .map(this::applyCustomFunction)
                 .ifPresent(spawner::setSpawnRateExpression);
         Optional.ofNullable(values.get("final-amount"))
+                .map(o -> values.getOrDefault("amount", o))
                 .map(String::valueOf)
                 .map(Expression::new)
                 .map(this::applyCustomFunction)
                 .ifPresent(spawner::setFinalAmountExpression);
         Optional.ofNullable(values.get("spawn-weight"))
+                .map(o -> values.getOrDefault("weight", o))
                 .map(String::valueOf)
                 .map(Expression::new)
                 .map(this::applyCustomFunction)
