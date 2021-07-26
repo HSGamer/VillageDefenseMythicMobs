@@ -123,12 +123,11 @@ public class MythicSpawner implements ZombieSpawner {
         return priority;
     }
 
-    public boolean spawnZombie(Location location, Arena arena, double level) {
-        MythicMob mythicMob = MythicMobs.inst().getAPIHelper().getMythicMob(mythicMobName);
-        if (mythicMob == null) {
-            LOGGER.warning(() -> "Cannot load mythic mob named " + mythicMobName);
-            return false;
-        }
+    public MythicMob getMythicMob() {
+        return MythicMobs.inst().getAPIHelper().getMythicMob(mythicMobName);
+    }
+
+    public boolean spawn(MythicMob mythicMob, Location location, Arena arena, double level) {
         ActiveMob mob = mythicMob.spawn(BukkitAdapter.adapt(location), level);
         Entity entity = mob.getEntity().getBukkitEntity();
         if (entity instanceof Zombie) {
@@ -146,6 +145,12 @@ public class MythicSpawner implements ZombieSpawner {
         int wave = arena.getWave();
         int phase = arena.getOption(ArenaOption.ZOMBIE_SPAWN_COUNTER);
         if (this.checkPhase(arena, wave, phase, spawn) && this.checkWave(wave)) {
+            MythicMob mythicMob = this.getMythicMob();
+            if (mythicMob == null) {
+                LOGGER.warning(() -> "Cannot load mythic mob named " + mythicMobName);
+                return;
+            }
+
             int spawnAmount = this.getFinalAmount(arena, wave, phase, spawn);
             double spawnRate = this.getSpawnRate(arena, wave, phase, spawn);
             int weight = this.getSpawnWeight(arena, wave, phase, spawn);
@@ -155,7 +160,7 @@ public class MythicSpawner implements ZombieSpawner {
                 int zombiesToSpawn = arena.getOption(ArenaOption.ZOMBIES_TO_SPAWN);
                 if (zombiesToSpawn >= weight && spawnRate != 0.0D && (spawnRate == 1.0D || random.nextDouble() < spawnRate)) {
                     Location location = arena.getRandomZombieSpawn(random);
-                    if (this.spawnZombie(location, arena, level)) {
+                    if (this.spawn(mythicMob, location, arena, level)) {
                         arena.setOptionValue(ArenaOption.ZOMBIES_TO_SPAWN, zombiesToSpawn - weight);
                     }
                 }
