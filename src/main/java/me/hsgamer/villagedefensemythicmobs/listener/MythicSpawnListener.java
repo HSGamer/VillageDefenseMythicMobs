@@ -2,8 +2,8 @@ package me.hsgamer.villagedefensemythicmobs.listener;
 
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
 import org.bukkit.Location;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import plugily.projects.villagedefense.arena.Arena;
@@ -23,8 +23,8 @@ public class MythicSpawnListener implements Listener {
             return;
         }
         Arena arena = optionalArena.get();
-        if (entity instanceof Zombie) {
-            arena.getZombies().add((Zombie) entity);
+        if (entity instanceof Creature) {
+            arena.getEnemies().add((Creature) entity);
         } else {
             event.setCancelled();
         }

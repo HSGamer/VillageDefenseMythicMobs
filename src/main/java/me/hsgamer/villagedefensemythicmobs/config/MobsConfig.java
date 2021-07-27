@@ -38,7 +38,7 @@ public class MobsConfig {
             Map<String, Object> values = config.getNormalizedValues(key, false);
             MythicSpawner spawner = getSpawner(key, values);
             spawnerList.add(spawner);
-            plugin.getParentPlugin().getZombieSpawnerRegistry().getZombieSpawnerSet().add(spawner);
+            plugin.getParentPlugin().getEnemySpawnerRegistry().getEnemySpawnerSet().add(spawner);
         });
     }
 
@@ -84,7 +84,7 @@ public class MobsConfig {
     }
 
     public void clearSpawners() {
-        spawnerList.forEach(plugin.getParentPlugin().getZombieSpawnerRegistry().getZombieSpawnerSet()::remove);
+        spawnerList.forEach(plugin.getParentPlugin().getEnemySpawnerRegistry().getEnemySpawnerSet()::remove);
         spawnerList.clear();
     }
 

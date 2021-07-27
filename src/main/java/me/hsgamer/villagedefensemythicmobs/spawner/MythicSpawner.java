@@ -6,10 +6,10 @@ import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
 import org.bukkit.Location;
+import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.Zombie;
 import plugily.projects.villagedefense.arena.Arena;
-import plugily.projects.villagedefense.arena.managers.spawner.ZombieSpawner;
+import plugily.projects.villagedefense.arena.managers.spawner.EnemySpawner;
 import plugily.projects.villagedefense.arena.options.ArenaOption;
 
 import java.math.BigDecimal;
@@ -18,14 +18,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
-public class MythicSpawner implements ZombieSpawner {
+public class MythicSpawner implements EnemySpawner {
     private static final Logger LOGGER = Logger.getLogger(MythicSpawner.class.getSimpleName());
 
     private static final String WAVE_VAR = "wave";
     private static final String PHASE_VAR = "phase";
     private static final String AMOUNT_VAR = "amount";
     private static final String LEFT_VAR = "left";
-    private static final String ZOMBIE_VAR = "zombie";
+    private static final String ENEMY_VAR = "enemy";
     private static final String VILLAGER_VAR = "villager";
     private static final String WOLF_VAR = "wolf";
     private static final String GOLEM_VAR = "golem";
@@ -49,7 +49,7 @@ public class MythicSpawner implements ZombieSpawner {
         expression.setVariable(PHASE_VAR, BigDecimal.valueOf(phase));
         expression.setVariable(AMOUNT_VAR, BigDecimal.valueOf(spawnAmount));
         expression.setVariable(LEFT_VAR, BigDecimal.valueOf(arena.getOption(ArenaOption.ZOMBIES_TO_SPAWN)));
-        expression.setVariable(ZOMBIE_VAR, BigDecimal.valueOf(arena.getZombies().size()));
+        expression.setVariable(ENEMY_VAR, BigDecimal.valueOf(arena.getEnemies().size()));
         expression.setVariable(VILLAGER_VAR, BigDecimal.valueOf(arena.getVillagers().size()));
         expression.setVariable(WOLF_VAR, BigDecimal.valueOf(arena.getWolves().size()));
         expression.setVariable(GOLEM_VAR, BigDecimal.valueOf(arena.getIronGolems().size()));
@@ -130,8 +130,8 @@ public class MythicSpawner implements ZombieSpawner {
     public boolean spawn(MythicMob mythicMob, Location location, Arena arena, double level) {
         ActiveMob mob = mythicMob.spawn(BukkitAdapter.adapt(location), level);
         Entity entity = mob.getEntity().getBukkitEntity();
-        if (entity instanceof Zombie) {
-            arena.getZombies().add((Zombie) entity);
+        if (entity instanceof Creature) {
+            arena.getEnemies().add((Creature) entity);
             return true;
         } else {
             mob.getEntity().remove();
@@ -141,7 +141,7 @@ public class MythicSpawner implements ZombieSpawner {
     }
 
     @Override
-    public void spawnZombie(Random random, Arena arena, int spawn) {
+    public void spawn(Random random, Arena arena, int spawn) {
         int wave = arena.getWave();
         int phase = arena.getOption(ArenaOption.ZOMBIE_SPAWN_COUNTER);
         if (this.checkPhase(arena, wave, phase, spawn) && this.checkWave(wave)) {
