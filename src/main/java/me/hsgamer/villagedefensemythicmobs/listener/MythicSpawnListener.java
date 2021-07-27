@@ -24,7 +24,9 @@ public class MythicSpawnListener implements Listener {
         }
         Arena arena = optionalArena.get();
         if (entity instanceof Creature) {
-            arena.getEnemies().add((Creature) entity);
+            if (!arena.getEnemies().contains(entity)) {
+                arena.getEnemies().add((Creature) entity);
+            }
         } else {
             event.setCancelled();
         }
