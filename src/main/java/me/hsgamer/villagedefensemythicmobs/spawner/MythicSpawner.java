@@ -5,6 +5,7 @@ import io.lumine.xikage.mythicmobs.MythicMobs;
 import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
 import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
 import io.lumine.xikage.mythicmobs.mobs.MythicMob;
+import io.lumine.xikage.mythicmobs.mobs.entities.SpawnReason;
 import org.bukkit.Location;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
@@ -128,13 +129,15 @@ public class MythicSpawner implements EnemySpawner {
     }
 
     public boolean spawn(MythicMob mythicMob, Location location, Arena arena, double level) {
-        ActiveMob mob = mythicMob.spawn(BukkitAdapter.adapt(location), level);
+        ActiveMob mob = mythicMob.spawn(BukkitAdapter.adapt(location), level, SpawnReason.OTHER, entity -> {
+            if (entity instanceof Creature) {
+                arena.getEnemies().add((Creature) entity);
+            }
+        });
         Entity entity = mob.getEntity().getBukkitEntity();
         if (entity instanceof Creature) {
-            arena.getEnemies().add((Creature) entity);
             return true;
         } else {
-            mob.getEntity().remove();
             LOGGER.warning(() -> "Cannot spawn " + mythicMobName + " in arena " + arena.getId() + " as the mob is not Creature");
             return false;
         }
