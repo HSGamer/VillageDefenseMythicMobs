@@ -135,7 +135,7 @@ public class MythicSpawner implements EnemySpawner {
             return true;
         } else {
             mob.getEntity().remove();
-            LOGGER.warning(() -> "Cannot spawn " + mythicMobName + " in arena " + arena.getId() + " as the mob is not Zombie");
+            LOGGER.warning(() -> "Cannot spawn " + mythicMobName + " in arena " + arena.getId() + " as the mob is not Creature");
             return false;
         }
     }
