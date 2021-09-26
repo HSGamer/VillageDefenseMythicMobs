@@ -5,6 +5,8 @@ import me.hsgamer.hscore.bukkit.baseplugin.BasePlugin;
 import me.hsgamer.villagedefensemythicmobs.command.ReloadCommand;
 import me.hsgamer.villagedefensemythicmobs.config.MobsConfig;
 import me.hsgamer.villagedefensemythicmobs.config.SpawnerData;
+import me.hsgamer.villagedefensemythicmobs.hook.boss.BossSpawnListener;
+import me.hsgamer.villagedefensemythicmobs.hook.boss.BossSpawner;
 import me.hsgamer.villagedefensemythicmobs.hook.mythicmobs.MythicMobSpawnListener;
 import me.hsgamer.villagedefensemythicmobs.hook.mythicmobs.MythicMobSpawner;
 import me.hsgamer.villagedefensemythicmobs.spawner.AbstractMythicSpawner;
@@ -23,8 +25,12 @@ public final class VillageDefenseMythicMobs extends BasePlugin {
         mobsConfig.setup();
         registerCommand(new ReloadCommand(this));
         if (Bukkit.getPluginManager().isPluginEnabled("MythicMobs")) {
-            mythicSpawnerBuilder.register(MythicMobSpawner::new, "mythicmobs", "mythic");
+            mythicSpawnerBuilder.register(MythicMobSpawner::new, "mythicmob", "mythic", "mythicmobs");
             registerListener(new MythicMobSpawnListener());
+        }
+        if (Bukkit.getPluginManager().isPluginEnabled("Boss")) {
+            mythicSpawnerBuilder.register(BossSpawner::new, "boss");
+            registerListener(new BossSpawnListener());
         }
     }
 

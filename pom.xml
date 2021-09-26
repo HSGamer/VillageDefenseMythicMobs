@@ -76,6 +76,10 @@
             <url>https://mvn.lumine.io/repository/maven-public/</url>
         </repository>
         <repository>
+            <id>mineacademy-repo</id>
+            <url>https://bitbucket.org/kangarko/libraries/raw/master</url>
+        </repository>
+        <repository>
             <id>codemc-repo</id>
             <url>https://repo.codemc.io/repository/maven-public/</url>
         </repository>
@@ -103,6 +107,13 @@
             <artifactId>MythicMobs</artifactId>
             <version>4.12.0</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mineacademy.plugin</groupId>
+            <artifactId>Boss-API</artifactId>
+            <version>3.10.10</version>
+            <scope>system</scope>
+            <systemPath>${project.basedir}/lib/Boss.jar</systemPath>
         </dependency>
         <dependency>
             <groupId>me.HSGamer</groupId>

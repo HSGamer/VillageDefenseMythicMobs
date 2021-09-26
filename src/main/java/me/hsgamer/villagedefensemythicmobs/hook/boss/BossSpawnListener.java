@@ -1,22 +1,21 @@
-package me.hsgamer.villagedefensemythicmobs.hook.mythicmobs;
+package me.hsgamer.villagedefensemythicmobs.hook.boss;
 
-import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
 import me.hsgamer.villagedefensemythicmobs.Utils;
 import org.bukkit.Location;
 import org.bukkit.entity.Creature;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.mineacademy.boss.api.event.BossPreSpawnEvent;
 import plugily.projects.villagedefense.arena.Arena;
 
 import java.util.Optional;
 
-public class MythicMobSpawnListener implements Listener {
-
+public class BossSpawnListener implements Listener {
     @EventHandler
-    public void onMythicSpawn(MythicMobSpawnEvent event) {
+    public void onBossSpawn(BossPreSpawnEvent event) {
         Entity entity = event.getEntity();
-        Location location = event.getLocation();
+        Location location = entity.getLocation();
         Optional<Arena> optionalArena = Utils.getArena(location);
         if (!optionalArena.isPresent()) {
             return;
@@ -27,7 +26,7 @@ public class MythicMobSpawnListener implements Listener {
                 arena.getEnemies().add((Creature) entity);
             }
         } else {
-            event.setCancelled();
+            event.setCancelled(true);
         }
     }
 }
