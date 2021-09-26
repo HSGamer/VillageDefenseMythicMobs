@@ -5,7 +5,7 @@ import me.hsgamer.hscore.bukkit.config.BukkitConfig;
 import me.hsgamer.hscore.common.CollectionUtils;
 import me.hsgamer.hscore.expression.ExpressionUtils;
 import me.hsgamer.villagedefensemythicmobs.VillageDefenseMythicMobs;
-import me.hsgamer.villagedefensemythicmobs.spawner.MythicSpawner;
+import me.hsgamer.villagedefensemythicmobs.spawner.AbstractMythicSpawner;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.stream.Collectors;
 public class MobsConfig {
     private final VillageDefenseMythicMobs plugin;
     private final BukkitConfig config;
-    private final List<MythicSpawner> spawnerList = new ArrayList<>();
+    private final List<AbstractMythicSpawner> spawnerList = new ArrayList<>();
 
     public MobsConfig(VillageDefenseMythicMobs plugin) {
         this.plugin = plugin;
@@ -36,15 +36,32 @@ public class MobsConfig {
     public void initSpawners() {
         config.getKeys(false).forEach(key -> {
             Map<String, Object> values = config.getNormalizedValues(key, false);
-            MythicSpawner spawner = getSpawner(key, values);
-            spawnerList.add(spawner);
-            plugin.getParentPlugin().getEnemySpawnerRegistry().getEnemySpawnerSet().add(spawner);
+            getSpawner(key, values).ifPresent(spawner -> {
+                spawnerList.add(spawner);
+                plugin.getParentPlugin().getEnemySpawnerRegistry().getEnemySpawnerSet().add(spawner);
+            });
         });
     }
 
-    private MythicSpawner getSpawner(String name, Map<String, Object> values) {
+    private Optional<AbstractMythicSpawner> getSpawner(String spawnerName, Map<String, Object> values) {
         int priority = Optional.ofNullable(values.get("priority")).map(String::valueOf).map(Integer::parseInt).orElse(0);
-        MythicSpawner spawner = new MythicSpawner(name, priority);
+        Optional<String> mobName = Optional.ofNullable(values.get("name")).map(String::valueOf);
+        Optional<String> type = Optional.ofNullable(values.get("type")).map(String::valueOf);
+        if (!type.isPresent()) {
+            plugin.getLogger().warning(() -> "The spawner '" + spawnerName + "' is missing a 'type' value");
+            return Optional.empty();
+        }
+        if (!mobName.isPresent()) {
+            plugin.getLogger().warning(() -> "The spawner '" + spawnerName + "' is missing a 'name' value");
+            return Optional.empty();
+        }
+        SpawnerData spawnerData = new SpawnerData(spawnerName, mobName.get(), priority);
+        Optional<AbstractMythicSpawner> optionalSpawner = plugin.getMythicSpawnerBuilder().build(type.get(), spawnerData);
+        if (!optionalSpawner.isPresent()) {
+            plugin.getLogger().warning(() -> "Unknown spawner type for the spawner '" + spawnerName + "'");
+            return Optional.empty();
+        }
+        AbstractMythicSpawner spawner = optionalSpawner.get();
 
         Optional.ofNullable(values.get("phase-condition"))
                 .map(o -> values.getOrDefault("phase", o))
@@ -80,7 +97,7 @@ public class MobsConfig {
                 .map(this::applyCustomFunction)
                 .ifPresent(spawner::setLevelExpression);
 
-        return spawner;
+        return Optional.of(spawner);
     }
 
     public void clearSpawners() {

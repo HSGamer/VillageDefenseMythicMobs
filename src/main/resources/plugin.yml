@@ -2,5 +2,7 @@ name: VillageDefenseMythicMobs
 version: ${project.version}
 main: me.hsgamer.villagedefensemythicmobs.VillageDefenseMythicMobs
 api-version: 1.13
-depend: [ MythicMobs, VillageDefense ]
+depend: [ VillageDefense ]
+softdepend:
+  - MythicMobs
 authors: [ HSGamer ]

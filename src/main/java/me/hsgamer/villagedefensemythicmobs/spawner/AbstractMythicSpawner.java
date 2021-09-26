@@ -1,14 +1,9 @@
 package me.hsgamer.villagedefensemythicmobs.spawner;
 
 import com.udojava.evalex.Expression;
-import io.lumine.xikage.mythicmobs.MythicMobs;
-import io.lumine.xikage.mythicmobs.adapters.bukkit.BukkitAdapter;
-import io.lumine.xikage.mythicmobs.mobs.ActiveMob;
-import io.lumine.xikage.mythicmobs.mobs.MythicMob;
-import io.lumine.xikage.mythicmobs.mobs.entities.SpawnReason;
+import me.hsgamer.villagedefensemythicmobs.config.SpawnerData;
+import me.hsgamer.villagedefensemythicmobs.hook.mythicmobs.MythicMobSpawner;
 import org.bukkit.Location;
-import org.bukkit.entity.Creature;
-import org.bukkit.entity.Entity;
 import plugily.projects.villagedefense.arena.Arena;
 import plugily.projects.villagedefense.arena.managers.spawner.EnemySpawner;
 import plugily.projects.villagedefense.arena.options.ArenaOption;
@@ -19,8 +14,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.logging.Logger;
 
-public class MythicSpawner implements EnemySpawner {
-    private static final Logger LOGGER = Logger.getLogger(MythicSpawner.class.getSimpleName());
+public abstract class AbstractMythicSpawner implements EnemySpawner {
+    protected static final Logger LOGGER = Logger.getLogger(MythicMobSpawner.class.getSimpleName());
 
     private static final String WAVE_VAR = "wave";
     private static final String PHASE_VAR = "phase";
@@ -31,7 +26,8 @@ public class MythicSpawner implements EnemySpawner {
     private static final String WOLF_VAR = "wolf";
     private static final String GOLEM_VAR = "golem";
 
-    private final String mythicMobName;
+    private final String spawnerName;
+    private final String mobName;
     private final int priority;
     private final List<Expression> phaseConditions = new ArrayList<>();
     private final List<Expression> waveConditions = new ArrayList<>();
@@ -40,9 +36,10 @@ public class MythicSpawner implements EnemySpawner {
     private Expression spawnWeightExpression = new Expression("1");
     private Expression levelExpression = new Expression("1");
 
-    public MythicSpawner(String mythicMobName, int priority) {
-        this.mythicMobName = mythicMobName;
-        this.priority = priority;
+    protected AbstractMythicSpawner(SpawnerData spawnerData) {
+        this.spawnerName = spawnerData.spawnerName;
+        this.mobName = spawnerData.mobName;
+        this.priority = spawnerData.priority;
     }
 
     private static void applyVariables(Expression expression, Arena arena, int wave, int phase, int spawnAmount) {
@@ -116,7 +113,7 @@ public class MythicSpawner implements EnemySpawner {
 
     @Override
     public String getName() {
-        return "Mythic_" + mythicMobName;
+        return "MythicSpawner_" + spawnerName;
     }
 
     @Override
@@ -124,36 +121,21 @@ public class MythicSpawner implements EnemySpawner {
         return priority;
     }
 
-    public MythicMob getMythicMob() {
-        return MythicMobs.inst().getAPIHelper().getMythicMob(mythicMobName);
+    public String getMobName() {
+        return mobName;
     }
 
-    public boolean spawn(MythicMob mythicMob, Location location, Arena arena, double level) {
-        ActiveMob mob = mythicMob.spawn(BukkitAdapter.adapt(location), level, SpawnReason.OTHER, entity -> {
-            if (entity instanceof Creature) {
-                arena.getEnemies().add((Creature) entity);
-            }
-        });
-        Entity entity = mob.getEntity().getBukkitEntity();
-        if (entity instanceof Creature) {
-            return true;
-        } else {
-            LOGGER.warning(() -> "Cannot spawn " + mythicMobName + " in arena " + arena.getId() + " as the mob is not Creature");
-            return false;
-        }
+    public String getSpawnerName() {
+        return spawnerName;
     }
+
+    protected abstract boolean spawn(Location location, Arena arena, double level);
 
     @Override
     public void spawn(Random random, Arena arena, int spawn) {
         int wave = arena.getWave();
         int phase = arena.getOption(ArenaOption.ZOMBIE_SPAWN_COUNTER);
         if (this.checkPhase(arena, wave, phase, spawn) && this.checkWave(wave)) {
-            MythicMob mythicMob = this.getMythicMob();
-            if (mythicMob == null) {
-                LOGGER.warning(() -> "Cannot load mythic mob named " + mythicMobName);
-                return;
-            }
-
             int spawnAmount = this.getFinalAmount(arena, wave, phase, spawn);
             double spawnRate = this.getSpawnRate(arena, wave, phase, spawn);
             int weight = this.getSpawnWeight(arena, wave, phase, spawn);
@@ -163,7 +145,7 @@ public class MythicSpawner implements EnemySpawner {
                 int zombiesToSpawn = arena.getOption(ArenaOption.ZOMBIES_TO_SPAWN);
                 if (zombiesToSpawn >= weight && spawnRate != 0.0D && (spawnRate == 1.0D || random.nextDouble() < spawnRate)) {
                     Location location = arena.getRandomZombieSpawn(random);
-                    if (this.spawn(mythicMob, location, arena, level)) {
+                    if (this.spawn(location, arena, level)) {
                         arena.setOptionValue(ArenaOption.ZOMBIES_TO_SPAWN, zombiesToSpawn - weight);
                     }
                 }

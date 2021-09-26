@@ -1,4 +1,4 @@
-package me.hsgamer.villagedefensemythicmobs.listener;
+package me.hsgamer.villagedefensemythicmobs.hook.mythicmobs;
 
 import io.lumine.xikage.mythicmobs.api.bukkit.events.MythicMobSpawnEvent;
 import org.bukkit.Location;
@@ -12,7 +12,7 @@ import plugily.projects.villagedefense.arena.ArenaRegistry;
 import java.util.Objects;
 import java.util.Optional;
 
-public class MythicSpawnListener implements Listener {
+public class MythicMobSpawnListener implements Listener {
 
     @EventHandler
     public void onMythicSpawn(MythicMobSpawnEvent event) {
