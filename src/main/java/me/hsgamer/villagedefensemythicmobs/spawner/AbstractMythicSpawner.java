@@ -3,6 +3,7 @@ package me.hsgamer.villagedefensemythicmobs.spawner;
 import com.udojava.evalex.Expression;
 import me.hsgamer.hscore.common.CollectionUtils;
 import me.hsgamer.hscore.expression.ExpressionUtils;
+import me.hsgamer.villagedefensemythicmobs.VillageDefenseMythicMobs;
 import me.hsgamer.villagedefensemythicmobs.config.SpawnerData;
 import me.hsgamer.villagedefensemythicmobs.hook.mythicmobs.MythicMobSpawner;
 import org.bukkit.Location;
@@ -27,6 +28,7 @@ public abstract class AbstractMythicSpawner implements EnemySpawner {
     private static final String WOLF_VAR = "wolf";
     private static final String GOLEM_VAR = "golem";
 
+    private final VillageDefenseMythicMobs instance;
     private final String spawnerName;
     private final String mobName;
     private final int priority;
@@ -40,6 +42,7 @@ public abstract class AbstractMythicSpawner implements EnemySpawner {
     private final Expression levelExpression;
 
     protected AbstractMythicSpawner(SpawnerData spawnerData) {
+        this.instance = spawnerData.instance;
         this.spawnerName = spawnerData.spawnerName;
         this.mobName = spawnerData.mobName;
         this.priority = spawnerData.priority;
@@ -151,6 +154,10 @@ public abstract class AbstractMythicSpawner implements EnemySpawner {
 
     public Map<String, Object> getOptions() {
         return options;
+    }
+
+    public VillageDefenseMythicMobs getInstance() {
+        return instance;
     }
 
     protected abstract boolean spawn(Location location, Arena arena, double level);

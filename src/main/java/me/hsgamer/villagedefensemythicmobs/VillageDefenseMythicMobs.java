@@ -9,6 +9,7 @@ import me.hsgamer.villagedefensemythicmobs.hook.boss.BossSpawnListener;
 import me.hsgamer.villagedefensemythicmobs.hook.boss.BossSpawner;
 import me.hsgamer.villagedefensemythicmobs.hook.mythicmobs.MythicMobSpawnListener;
 import me.hsgamer.villagedefensemythicmobs.hook.mythicmobs.MythicMobSpawner;
+import me.hsgamer.villagedefensemythicmobs.hook.vanilla.VanillaSpawner;
 import me.hsgamer.villagedefensemythicmobs.spawner.AbstractMythicSpawner;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -24,6 +25,7 @@ public final class VillageDefenseMythicMobs extends BasePlugin {
         parentPlugin = JavaPlugin.getPlugin(Main.class);
         mobsConfig.setup();
         registerCommand(new ReloadCommand(this));
+        mythicSpawnerBuilder.register(VanillaSpawner::new, "vanilla", "default");
         if (Bukkit.getPluginManager().isPluginEnabled("MythicMobs")) {
             mythicSpawnerBuilder.register(MythicMobSpawner::new, "mythicmob", "mythic", "mythicmobs");
             registerListener(new MythicMobSpawnListener());

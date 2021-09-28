@@ -40,9 +40,14 @@ public class MobsConfig {
     }
 
     private Optional<AbstractMythicSpawner> getSpawner(String spawnerName, Map<String, Object> values) {
-        int priority = Optional.ofNullable(values.get("priority")).map(String::valueOf).map(Integer::parseInt).orElse(0);
-        Optional<String> mobName = Optional.ofNullable(values.get("name")).map(String::valueOf);
-        Optional<String> type = Optional.ofNullable(values.get("type")).map(String::valueOf);
+        int priority = Optional.ofNullable(values.get("priority"))
+                .map(String::valueOf)
+                .map(Integer::parseInt)
+                .orElse(0);
+        Optional<String> mobName = Optional.ofNullable(values.get("name"))
+                .map(String::valueOf);
+        Optional<String> type = Optional.ofNullable(values.get("type"))
+                .map(String::valueOf);
         if (!type.isPresent()) {
             plugin.getLogger().warning(() -> "The spawner '" + spawnerName + "' is missing a 'type' value");
             return Optional.empty();
@@ -51,7 +56,7 @@ public class MobsConfig {
             plugin.getLogger().warning(() -> "The spawner '" + spawnerName + "' is missing a 'name' value");
             return Optional.empty();
         }
-        SpawnerData spawnerData = new SpawnerData(spawnerName, mobName.get(), priority, values);
+        SpawnerData spawnerData = new SpawnerData(plugin, spawnerName, mobName.get(), priority, values);
         Optional<AbstractMythicSpawner> optionalSpawner = plugin.getMythicSpawnerBuilder().build(type.get(), spawnerData);
         if (!optionalSpawner.isPresent()) {
             plugin.getLogger().warning(() -> "Unknown spawner type for the spawner '" + spawnerName + "'");
