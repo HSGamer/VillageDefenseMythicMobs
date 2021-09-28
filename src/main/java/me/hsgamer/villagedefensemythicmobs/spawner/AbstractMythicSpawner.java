@@ -156,7 +156,7 @@ public abstract class AbstractMythicSpawner implements EnemySpawner {
     protected abstract boolean spawn(Location location, Arena arena, double level);
 
     @Override
-    public void spawn(Random random, Arena arena, int spawn) {
+    public final void spawn(Random random, Arena arena, int spawn) {
         int wave = arena.getWave();
         int phase = arena.getOption(ArenaOption.ZOMBIE_SPAWN_COUNTER);
         if (this.checkPhase(arena, wave, phase, spawn) && this.checkWave(wave)) {
