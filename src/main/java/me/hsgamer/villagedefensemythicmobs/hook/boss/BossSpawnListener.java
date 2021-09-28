@@ -25,12 +25,12 @@ public class BossSpawnListener implements Listener {
             return;
         }
         Arena arena = optionalArena.get();
-        if (entity instanceof Creature) {
-            if (!arena.getEnemies().contains(entity)) {
-                arena.getEnemies().add((Creature) entity);
-            }
-        } else {
+        if (!(entity instanceof Creature)) {
             event.setCancelled(true);
+            return;
+        }
+        if (!arena.getEnemies().contains(entity)) {
+            arena.getEnemies().add((Creature) entity);
         }
     }
 }
